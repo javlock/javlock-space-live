@@ -1,0 +1,7 @@
+.classpath
+.project
+.settings
+target
+
+javlock_games_space_client
+javlock_games_space_server
