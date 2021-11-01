@@ -414,6 +414,11 @@ public class ClientGameEngine extends GameEngine {
 					targetOrigin.set(enemyShip.getPosition().x, enemyShip.getPosition().y, enemyShip.getPosition().z);
 					Vector3f interceptorDir = StaticData.intercept(GameHeader.camera.position, shotVelocity,
 							targetOrigin, tmp3.set(GameHeader.camera.linearVel).negate(), StaticData.tmp2);
+
+					if (interceptorDir == null) {
+						// FIXME interceptorDir==null
+						return;
+					}
 					viewMatrix.transformDirection(interceptorDir);
 					if (interceptorDir.z > 0.0) {
 						return;
