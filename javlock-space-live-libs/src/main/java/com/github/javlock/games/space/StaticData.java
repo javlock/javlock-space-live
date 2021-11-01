@@ -18,6 +18,8 @@ import org.lwjgl.demo.util.WavefrontMeshLoader.Mesh;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
+
 /**
  * @author dev
  *
@@ -28,12 +30,13 @@ public class StaticData {
 
 	public static SecureRandom secureRandomObj;
 
-	public static Mesh shipMesh;
-
 	public static Mesh asteroidMesh;
 	public static Mesh sphereMesh;
-	public static int shipPositionVbo;
-	public static int shipNormalVbo;
+
+	// public static Mesh shipMesh;
+	// public static int shipPositionVbo;
+	// public static int shipNormalVbo;
+
 	/**
 	 * ИСПОЛЬЗУЕТСЯ В УПРАВЛЕНИИ ДЛЯ ПОВОРОТОВ
 	 */
@@ -64,7 +67,7 @@ public class StaticData {
 	public static void init() throws IOException {
 		// LOAD MESHs
 		WavefrontMeshLoader loader = new WavefrontMeshLoader();
-		shipMesh = loader.loadMesh("org/lwjgl/demo/game/ship.obj.zip");
+		Ship.shipMesh = loader.loadMesh("org/lwjgl/demo/game/ship.obj.zip");
 		asteroidMesh = loader.loadMesh("org/lwjgl/demo/game/asteroid.obj.zip");
 		sphereMesh = loader.loadMesh("org/lwjgl/demo/game/sphere.obj.zip");
 
