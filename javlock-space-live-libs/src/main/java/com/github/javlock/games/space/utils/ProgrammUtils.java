@@ -1,5 +1,6 @@
 package com.github.javlock.games.space.utils;
 
+import static com.github.javlock.games.space.StaticData.asteroidMesh;
 import static org.lwjgl.demo.util.IOUtils.ioResourceToByteBuffer;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -30,13 +31,29 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 
+import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
+import com.github.javlock.games.space.objects.space.entity.inspace.Shot;
 
 public class ProgrammUtils {
 	public static void createAll() throws IOException {
 		createShipProgram();
 		createShip();
 
+		createAsteroid();
+
+		createShotProgram();
+	}
+
+	private static void createAsteroid() throws IOException {
+		Asteroid.asteroidPositionVbo = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidPositionVbo);
+		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.positions, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		Asteroid.asteroidNormalVbo = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidNormalVbo);
+		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.normals, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	public static int createProgram(int vshader, int fshader) {
@@ -96,5 +113,15 @@ public class ProgrammUtils {
 		Ship.ship_modelUniform = glGetUniformLocation(program, "model");
 		glUseProgram(0);
 		Ship.shipProgram = program;
+	}
+
+	private static void createShotProgram() throws IOException {
+		int vshader = ProgrammUtils.createShader("org/lwjgl/demo/game/shot.vs", GL_VERTEX_SHADER);
+		int fshader = ProgrammUtils.createShader("org/lwjgl/demo/game/shot.fs", GL_FRAGMENT_SHADER);
+		int program = ProgrammUtils.createProgram(vshader, fshader);
+		glUseProgram(program);
+		Shot.shot_projUniform = glGetUniformLocation(program, "proj");
+		glUseProgram(0);
+		Shot.shotProgram = program;
 	}
 }

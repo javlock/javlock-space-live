@@ -4,8 +4,6 @@ import static com.github.javlock.games.space.StaticData.asteroidMesh;
 import static com.github.javlock.games.space.StaticData.broadphase;
 import static com.github.javlock.games.space.StaticData.narrowphase;
 import static com.github.javlock.games.space.StaticData.sphereMesh;
-import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.asteroidNormalVbo;
-import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.asteroidPositionVbo;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.createCubemapProgram;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.createFullScreenQuad;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.drawAsteroids;
@@ -100,10 +98,7 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 import static org.lwjgl.opengl.GL14.GL_GENERATE_MIPMAP;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
@@ -179,9 +174,9 @@ public class ClientGameEngine extends GameEngine {
 
 	private boolean windowed = false;
 
-	private int shotProgram;
+//	private int shotProgram;
+//	private int shot_projUniform;
 
-	private int shot_projUniform;
 	private int particleProgram;
 	private int particle_projUniform;
 
@@ -216,17 +211,6 @@ public class ClientGameEngine extends GameEngine {
 	private Bootstrap bootstrap;
 
 	private NioEventLoopGroup nioEventLoopGroup;
-
-	private void createAsteroid() throws IOException {
-		asteroidPositionVbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, asteroidPositionVbo);
-		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.positions, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		asteroidNormalVbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, asteroidNormalVbo);
-		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.normals, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
 
 	// ТЕКСТУРА
 	private void createCubemapTexture() throws IOException {
@@ -267,16 +251,6 @@ public class ClientGameEngine extends GameEngine {
 		particle_projUniform = glGetUniformLocation(program, "proj");
 		glUseProgram(0);
 		particleProgram = program;
-	}
-
-	private void createShotProgram() throws IOException {
-		int vshader = ProgrammUtils.createShader("org/lwjgl/demo/game/shot.vs", GL_VERTEX_SHADER);
-		int fshader = ProgrammUtils.createShader("org/lwjgl/demo/game/shot.fs", GL_FRAGMENT_SHADER);
-		int program = ProgrammUtils.createProgram(vshader, fshader);
-		glUseProgram(program);
-		shot_projUniform = glGetUniformLocation(program, "proj");
-		glUseProgram(0);
-		shotProgram = program;
 	}
 
 	private void drawHud() {
@@ -536,7 +510,7 @@ public class ClientGameEngine extends GameEngine {
 		}
 		shotsVertices.flip();
 		if (num > 0) {
-			glUseProgram(shotProgram);
+			glUseProgram(Shot.shotProgram);
 			glDepthMask(false);
 			glEnable(GL_BLEND);
 			glVertexPointer(4, GL_FLOAT, 6 * 4, shotsVertices);
@@ -698,13 +672,11 @@ public class ClientGameEngine extends GameEngine {
 		ProgrammUtils.createAll();
 
 		createCubemapTexture();
-		createFullScreenQuad();
 		createCubemapProgram();
 
-		createParticleProgram();
-		createShotProgram();
+		createFullScreenQuad();
 
-		createAsteroid();
+		createParticleProgram();
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnable(GL_DEPTH_TEST);
@@ -911,8 +883,8 @@ public class ClientGameEngine extends GameEngine {
 		glUniformMatrix4fv(Ship.ship_projUniform, false, projMatrix.get(matrixBuffer));
 
 		/* Update the shot shader */
-		glUseProgram(shotProgram);
-		glUniformMatrix4fv(shot_projUniform, false, matrixBuffer);
+		glUseProgram(Shot.shotProgram);
+		glUniformMatrix4fv(Shot.shot_projUniform, false, matrixBuffer);
 		/* Update the particle shader */
 		glUseProgram(particleProgram);
 		glUniformMatrix4fv(particle_projUniform, false, matrixBuffer);

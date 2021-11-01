@@ -46,9 +46,6 @@ public class GameShaders {
 	public static @Getter @Setter int cubemapProgram;
 	public static @Getter @Setter int cubemap_invViewProjUniform;
 
-	public static int asteroidPositionVbo;
-	public static int asteroidNormalVbo;
-
 	public static @Getter @Setter ByteBuffer quadVertices;
 
 	public static void createCubemapProgram() throws IOException {
@@ -76,10 +73,10 @@ public class GameShaders {
 
 	public static void drawAsteroids() {
 		glUseProgram(Ship.shipProgram);
-		glBindBuffer(GL_ARRAY_BUFFER, asteroidPositionVbo);
+		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidPositionVbo);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glEnableClientState(GL_NORMAL_ARRAY);
-		glBindBuffer(GL_ARRAY_BUFFER, asteroidNormalVbo);
+		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidNormalVbo);
 		glNormalPointer(GL_FLOAT, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
