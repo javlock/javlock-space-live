@@ -2,7 +2,7 @@ package com.github.javlock.games.space;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.github.javlock.games.space.objects.space.entity.basic.VectorsDataObjectPairD;
+import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
 import com.github.javlock.games.space.objects.space.entity.inspace.Shot;
@@ -17,7 +17,7 @@ public class GameEngine extends Thread {
 	public static CopyOnWriteArrayList<Ship> localShips = new CopyOnWriteArrayList<>();
 	public static CopyOnWriteArrayList<Shot> directShots = new CopyOnWriteArrayList<>();
 	public static CopyOnWriteArrayList<Turret> turrets = new CopyOnWriteArrayList<>();
-	public static CopyOnWriteArrayList<VectorsDataObjectPairD> particles = new CopyOnWriteArrayList<>();
+	public static CopyOnWriteArrayList<Particle> particles = new CopyOnWriteArrayList<>();
 
 	public static float maxParticleLifetime = 1.0F;
 	protected static float particleSize = 1.0F;

@@ -99,9 +99,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 import static org.lwjgl.opengl.GL14.GL_GENERATE_MIPMAP;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.stb.STBEasyFont.stb_easy_font_print;
@@ -148,8 +145,8 @@ import com.github.javlock.games.space.client.online.game.utils.GameUtils;
 import com.github.javlock.games.space.network.packets.Packet;
 import com.github.javlock.games.space.network.packets.PingPacket;
 import com.github.javlock.games.space.network.packets.ReadyPacket;
+import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.basic.SpaceEntity;
-import com.github.javlock.games.space.objects.space.entity.basic.VectorsDataObjectPairD;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
 import com.github.javlock.games.space.objects.space.entity.inspace.Shot;
@@ -177,8 +174,8 @@ public class ClientGameEngine extends GameEngine {
 //	private int shotProgram;
 //	private int shot_projUniform;
 
-	private int particleProgram;
-	private int particle_projUniform;
+//	private int particleProgram;
+//	private int particle_projUniform;
 
 	private FloatBuffer shotsVertices = BufferUtils.createFloatBuffer(6 * 6 * maxShots);
 	private FloatBuffer particleVertices = BufferUtils.createFloatBuffer(6 * 6 * maxParticles);
@@ -241,16 +238,6 @@ public class ClientGameEngine extends GameEngine {
 		if (caps.OpenGL32 || caps.GL_ARB_seamless_cube_map) {
 			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		}
-	}
-
-	private void createParticleProgram() throws IOException {
-		int vshader = ProgrammUtils.createShader("org/lwjgl/demo/game/particle.vs", GL_VERTEX_SHADER);
-		int fshader = ProgrammUtils.createShader("org/lwjgl/demo/game/particle.fs", GL_FRAGMENT_SHADER);
-		int program = ProgrammUtils.createProgram(vshader, fshader);
-		glUseProgram(program);
-		particle_projUniform = glGetUniformLocation(program, "proj");
-		glUseProgram(0);
-		particleProgram = program;
 	}
 
 	private void drawHud() {
@@ -396,8 +383,8 @@ public class ClientGameEngine extends GameEngine {
 		particleVertices.clear();
 		int num = 0;
 
-		for (VectorsDataObjectPairD particle : particles) {
-			Vector3d particlePosition = particle.getParticlePosition();
+		for (Particle particle : particles) {
+			Vector3d particlePosition = particle.getPosition();
 			Vector4d particleVelocity = particle.getParticleVelocity();
 			if (particleVelocity.w > 0.0F) {
 				float x = (float) (particlePosition.x - GameHeader.camera.position.x);
@@ -429,7 +416,7 @@ public class ClientGameEngine extends GameEngine {
 		}
 		particleVertices.flip();
 		if (num > 0) {
-			glUseProgram(particleProgram);
+			glUseProgram(Particle.particleProgram);
 			glDepthMask(false);
 			glEnable(GL_BLEND);
 			glVertexPointer(4, GL_FLOAT, 6 * 4, particleVertices);
@@ -575,8 +562,8 @@ public class ClientGameEngine extends GameEngine {
 		}
 		for (int i = 0; i < explosionParticles; i++) {
 
-			VectorsDataObjectPairD particleDataObjectPairD = new VectorsDataObjectPairD();
-			Vector3d particlePosition = particleDataObjectPairD.getParticlePosition();
+			Particle particleDataObjectPairD = new Particle();
+			Vector3d particlePosition = particleDataObjectPairD.getPosition();
 			Vector4d particleVelocity = particleDataObjectPairD.getParticleVelocity();
 			if (particleVelocity.w <= 0.0F) {
 				if (normal != null) {
@@ -675,8 +662,6 @@ public class ClientGameEngine extends GameEngine {
 		createCubemapProgram();
 
 		createFullScreenQuad();
-
-		createParticleProgram();
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnable(GL_DEPTH_TEST);
@@ -886,8 +871,8 @@ public class ClientGameEngine extends GameEngine {
 		glUseProgram(Shot.shotProgram);
 		glUniformMatrix4fv(Shot.shot_projUniform, false, matrixBuffer);
 		/* Update the particle shader */
-		glUseProgram(particleProgram);
-		glUniformMatrix4fv(particle_projUniform, false, matrixBuffer);
+		glUseProgram(Particle.particleProgram);
+		glUniformMatrix4fv(Particle.particle_projUniform, false, matrixBuffer);
 
 		/* управление */
 		GameControl.updateControls();
@@ -902,7 +887,7 @@ public class ClientGameEngine extends GameEngine {
 	// ОБНОВЛЕНИЕ ЧАСТИЦ (И УДАЛЕНИЕ ПРИ .w<0 или .w > maxParticleLifetime)
 	private void updateParticles(float deltaTime) {
 
-		for (VectorsDataObjectPairD particle : particles) {
+		for (Particle particle : particles) {
 
 			Vector4d particleVelocity = particle.getParticleVelocity();
 
@@ -912,7 +897,7 @@ public class ClientGameEngine extends GameEngine {
 			}
 
 			particleVelocity.w += deltaTime;
-			Vector3d particlePosition = particle.getParticlePosition();
+			Vector3d particlePosition = particle.getPosition();
 
 			double x = particleVelocity.x;
 			double y = particleVelocity.y;

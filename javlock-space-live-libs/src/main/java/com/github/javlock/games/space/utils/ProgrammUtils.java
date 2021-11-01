@@ -31,6 +31,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 
+import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
 import com.github.javlock.games.space.objects.space.entity.inspace.Shot;
@@ -43,6 +44,8 @@ public class ProgrammUtils {
 		createAsteroid();
 
 		createShotProgram();
+
+		createParticleProgram();
 	}
 
 	private static void createAsteroid() throws IOException {
@@ -54,6 +57,16 @@ public class ProgrammUtils {
 		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidNormalVbo);
 		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.normals, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	private static void createParticleProgram() throws IOException {
+		int vshader = ProgrammUtils.createShader("org/lwjgl/demo/game/particle.vs", GL_VERTEX_SHADER);
+		int fshader = ProgrammUtils.createShader("org/lwjgl/demo/game/particle.fs", GL_FRAGMENT_SHADER);
+		int program = ProgrammUtils.createProgram(vshader, fshader);
+		glUseProgram(program);
+		Particle.particle_projUniform = glGetUniformLocation(program, "proj");
+		glUseProgram(0);
+		Particle.particleProgram = program;
 	}
 
 	public static int createProgram(int vshader, int fshader) {
