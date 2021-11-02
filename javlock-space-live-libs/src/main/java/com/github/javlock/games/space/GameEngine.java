@@ -2,6 +2,9 @@ package com.github.javlock.games.space;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+
 import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
@@ -20,16 +23,16 @@ public class GameEngine extends Thread {
 	public static CopyOnWriteArrayList<Particle> particles = new CopyOnWriteArrayList<>();
 
 	public static float maxParticleLifetime = 1.0F;
-	protected static float particleSize = 1.0F;
+
 	protected static final int explosionParticles = 40;
-	public static final int maxParticles = 4096 * 4;
-	public static float shotVelocity = 50.0F;
+
 	public static int shotOpponentMilliseconds = 20;// ПЕРЕЗАРЯДКА У ДРУГИХ
-	protected int maxShots = 102400;
+	public static Vector3f tmp3 = new Vector3f();
+	public static Vector3d tmp = new Vector3d();
+
 	protected float shotSeparation = 0.8f;
 	public int shotMilliseconds = 20;// ПЕРЕЗАРЯДКА своя
 	protected float maxShotLifetime = 4.0F;
-	protected float shotSize = 0.5f;
 
 	private @Getter @Setter boolean active = true;
 }

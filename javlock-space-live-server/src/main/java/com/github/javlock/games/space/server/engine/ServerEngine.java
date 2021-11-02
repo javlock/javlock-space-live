@@ -3,7 +3,6 @@ package com.github.javlock.games.space.server.engine;
 import static com.github.javlock.games.space.StaticData.asteroidMesh;
 import static com.github.javlock.games.space.StaticData.broadphase;
 import static com.github.javlock.games.space.StaticData.narrowphase;
-import static com.github.javlock.games.space.StaticData.tmp;
 
 import org.joml.GeometryUtils;
 import org.joml.Vector3d;
@@ -265,7 +264,7 @@ public class ServerEngine extends GameEngine {
 
 			Vector3d shotPosVVector3d = tmp.set(shipPosX, shipPosY, shipPosZ).sub(position).negate().normalize()
 					.mul(1.01f * shipRadius).add(shipPosX, shipPosY, shipPosZ);
-			Vector3f icept = StaticData.intercept(shotPosVVector3d, GameEngine.shotVelocity, position, linearVel,
+			Vector3f icept = StaticData.intercept(shotPosVVector3d, Shot.shotVelocity, position, linearVel,
 					StaticData.tmp2);
 
 			if (icept == null) {
@@ -282,9 +281,9 @@ public class ServerEngine extends GameEngine {
 			Vector4f projectileVelocity = newShot.getProjectileVelocity();
 			if (projectileVelocity.w <= 0.0F) {
 				projectilePosition.set(shotPosVVector3d);
-				projectileVelocity.x = StaticData.tmp2.x * GameEngine.shotVelocity;
-				projectileVelocity.y = StaticData.tmp2.y * GameEngine.shotVelocity;
-				projectileVelocity.z = StaticData.tmp2.z * GameEngine.shotVelocity;
+				projectileVelocity.x = StaticData.tmp2.x * Shot.shotVelocity;
+				projectileVelocity.y = StaticData.tmp2.y * Shot.shotVelocity;
+				projectileVelocity.z = StaticData.tmp2.z * Shot.shotVelocity;
 				projectileVelocity.w = 0.01f;
 			}
 			directShots.add(newShot);
