@@ -28,6 +28,7 @@ public class SpaceEntity implements Serializable, SpaceEntityInterface {
 
 	private @Getter Vector3d position = new Vector3d(0, 0, 10);
 	private @Getter @Setter Vector3f linearVel = new Vector3f();
+
 	private @Getter Vector4f projectileVelocity = new Vector4f(0, 0, 0, 0);
 
 	private transient @Getter @Setter EventBus worldEventBus;

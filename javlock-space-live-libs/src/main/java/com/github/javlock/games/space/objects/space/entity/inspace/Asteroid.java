@@ -12,6 +12,9 @@ public class Asteroid extends SpaceEntity {
 
 	private static final long serialVersionUID = -3209789085544875041L;
 
+	public static transient int asteroidPositionVbo;
+	public static transient int asteroidNormalVbo;
+
 	public static float generateCoord(float size, float a, float b) {
 		return NumberUtils.randomFloatInRange(0, a / b * size);
 	}

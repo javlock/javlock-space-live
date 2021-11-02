@@ -3,7 +3,6 @@ package com.github.javlock.games.space.server.engine;
 import static com.github.javlock.games.space.StaticData.asteroidMesh;
 import static com.github.javlock.games.space.StaticData.broadphase;
 import static com.github.javlock.games.space.StaticData.narrowphase;
-import static com.github.javlock.games.space.StaticData.shipMesh;
 import static com.github.javlock.games.space.StaticData.tmp;
 
 import org.joml.GeometryUtils;
@@ -348,8 +347,8 @@ public class ServerEngine extends GameEngine {
 				}
 				// СТОЛКНОВЕНИЕ СНАРЯДА С Кораблями
 				if (broadphase(ship.getPosition().x, ship.getPosition().y, ship.getPosition().z,
-						shipMesh.boundingSphereRadius, shipRadius, projectilePosition, newPosition)
-						&& narrowphase(shipMesh.positions, ship.getPosition().x, ship.getPosition().y,
+						Ship.shipMesh.boundingSphereRadius, shipRadius, projectilePosition, newPosition)
+						&& narrowphase(Ship.shipMesh.positions, ship.getPosition().x, ship.getPosition().y,
 								ship.getPosition().z, shipRadius, projectilePosition, newPosition, tmp,
 								StaticData.tmp2)) {
 

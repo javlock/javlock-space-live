@@ -2,6 +2,8 @@ package com.github.javlock.games.space.objects.space.entity.inspace;
 
 import java.security.NoSuchAlgorithmException;
 
+import org.lwjgl.demo.util.WavefrontMeshLoader.Mesh;
+
 import com.github.javlock.games.space.objects.space.entity.basic.SpaceEntity;
 
 import lombok.Getter;
@@ -12,6 +14,16 @@ public class Ship extends SpaceEntity {
 	 *
 	 */
 	private static final long serialVersionUID = 8802711377991560305L;
+
+	public static transient int ship_viewUniform;
+	public static transient int ship_modelUniform;
+	public static transient int ship_projUniform;
+	public static transient int shipProgram;
+
+	public static Mesh shipMesh;
+
+	public static int shipPositionVbo;
+	public static int shipNormalVbo;
 
 	@Getter
 	@Setter

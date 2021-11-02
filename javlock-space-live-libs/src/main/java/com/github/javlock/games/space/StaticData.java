@@ -1,6 +1,7 @@
 package com.github.javlock.games.space;
 
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.FloatBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -17,6 +18,8 @@ import org.lwjgl.demo.util.WavefrontMeshLoader.Mesh;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
+
 /**
  * @author dev
  *
@@ -27,12 +30,13 @@ public class StaticData {
 
 	public static SecureRandom secureRandomObj;
 
-	public static Mesh shipMesh;
-
 	public static Mesh asteroidMesh;
 	public static Mesh sphereMesh;
-	public static int shipPositionVbo;
-	public static int shipNormalVbo;
+
+	// public static Mesh shipMesh;
+	// public static int shipPositionVbo;
+	// public static int shipNormalVbo;
+
 	/**
 	 * ИСПОЛЬЗУЕТСЯ В УПРАВЛЕНИИ ДЛЯ ПОВОРОТОВ
 	 */
@@ -63,7 +67,7 @@ public class StaticData {
 	public static void init() throws IOException {
 		// LOAD MESHs
 		WavefrontMeshLoader loader = new WavefrontMeshLoader();
-		shipMesh = loader.loadMesh("org/lwjgl/demo/game/ship.obj.zip");
+		Ship.shipMesh = loader.loadMesh("org/lwjgl/demo/game/ship.obj.zip");
 		asteroidMesh = loader.loadMesh("org/lwjgl/demo/game/asteroid.obj.zip");
 		sphereMesh = loader.loadMesh("org/lwjgl/demo/game/sphere.obj.zip");
 
@@ -123,35 +127,40 @@ public class StaticData {
 	 * @param normal
 	 * @return
 	 */
-	public static boolean narrowphase(FloatBuffer data, double x, double y, double z, float scale, Vector3d pOld,
-			Vector3d pNew, Vector3d intersectionPoint, Vector3f normal) {
+	public static boolean narrowphase(FloatBuffer meshPositions, double x, double y, double z, float scale,
+			Vector3d pOld, Vector3d pNew, Vector3d intersectionPoint, Vector3f normal) {
 		Vector3f tmp3 = new Vector3f();
 		Vector3f tmp2 = new Vector3f();
 		tmp2.set(tmp.set(pOld).sub(x, y, z)).div(scale);
 		tmp3.set(tmp.set(pNew).sub(x, y, z)).div(scale);
-		data.clear();
+		// FIXME meshPositions.clear();
 		boolean intersects = false;
-		while (data.hasRemaining() && !intersects) {
-			float v0X = data.get();
-			float v0Y = data.get();
-			float v0Z = data.get();
-			float v1X = data.get();
-			float v1Y = data.get();
-			float v1Z = data.get();
-			float v2X = data.get();
-			float v2Y = data.get();
-			float v2Z = data.get();
-			if (Intersectionf.intersectLineSegmentTriangle(tmp2.x, tmp2.y, tmp2.z, tmp3.x, tmp3.y, tmp3.z, v0X, v0Y,
-					v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, 1E-6f, // StaticData.tmp2
-					tmp2)) {
-				intersectionPoint.x = tmp2.x * scale + x;
-				intersectionPoint.y = tmp2.y * scale + y;
-				intersectionPoint.z = tmp2.z * scale + z;
-				GeometryUtils.normal(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, normal);
-				intersects = true;
+
+		while (meshPositions.hasRemaining() && !intersects) {
+			try {
+				float v0X = meshPositions.get();
+				float v0Y = meshPositions.get();
+				float v0Z = meshPositions.get();
+				float v1X = meshPositions.get();
+				float v1Y = meshPositions.get();
+				float v1Z = meshPositions.get();
+				float v2X = meshPositions.get();
+				float v2Y = meshPositions.get();
+				float v2Z = meshPositions.get();
+				if (Intersectionf.intersectLineSegmentTriangle(tmp2.x, tmp2.y, tmp2.z, tmp3.x, tmp3.y, tmp3.z, v0X, v0Y,
+						v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, 1E-6f, tmp2)) {
+					intersectionPoint.x = tmp2.x * scale + x;
+					intersectionPoint.y = tmp2.y * scale + y;
+					intersectionPoint.z = tmp2.z * scale + z;
+					GeometryUtils.normal(v0X, v0Y, v0Z, v1X, v1Y, v1Z, v2X, v2Y, v2Z, normal);
+					intersects = true;
+				}
+
+			} catch (BufferUnderflowException e) {
+				// FIXME BufferUnderflowException narrowphase meshPositions
 			}
 		}
-		data.clear();
+		meshPositions.clear();
 		return intersects;
 	}
 
