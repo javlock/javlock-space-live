@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 
+import com.github.javlock.games.space.Cube;
 import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
 import com.github.javlock.games.space.objects.space.entity.inspace.Ship;
@@ -46,6 +48,8 @@ public class ProgrammUtils {
 		createShotProgram();
 
 		createParticleProgram();
+
+		createCubemapProgram();
 	}
 
 	private static void createAsteroid() throws IOException {
@@ -57,6 +61,18 @@ public class ProgrammUtils {
 		glBindBuffer(GL_ARRAY_BUFFER, Asteroid.asteroidNormalVbo);
 		glBufferData(GL_ARRAY_BUFFER, asteroidMesh.normals, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	public static void createCubemapProgram() throws IOException {
+		int vshader = ProgrammUtils.createShader("org/lwjgl/demo/game/cubemap.vs", GL_VERTEX_SHADER);
+		int fshader = ProgrammUtils.createShader("org/lwjgl/demo/game/cubemap.fs", GL_FRAGMENT_SHADER);
+		int program = ProgrammUtils.createProgram(vshader, fshader);
+		glUseProgram(program);
+		int texLocation = glGetUniformLocation(program, "tex");
+		glUniform1i(texLocation, 0);
+		Cube.cubemap_invViewProjUniform = glGetUniformLocation(program, "invViewProj");
+		glUseProgram(0);
+		Cube.cubemapProgram = program;
 	}
 
 	private static void createParticleProgram() throws IOException {

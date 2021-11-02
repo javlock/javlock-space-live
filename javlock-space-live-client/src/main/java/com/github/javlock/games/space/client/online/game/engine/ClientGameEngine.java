@@ -4,10 +4,7 @@ import static com.github.javlock.games.space.StaticData.asteroidMesh;
 import static com.github.javlock.games.space.StaticData.broadphase;
 import static com.github.javlock.games.space.StaticData.narrowphase;
 import static com.github.javlock.games.space.StaticData.sphereMesh;
-import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.createCubemapProgram;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.createFullScreenQuad;
-import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.drawAsteroids;
-import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.drawCubemap;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.frustumIntersection;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.matrixBuffer;
 import static com.github.javlock.games.space.client.online.game.engine.window.GameShaders.modelMatrix;
@@ -132,10 +129,10 @@ import org.lwjgl.system.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.javlock.games.space.Cube;
 import com.github.javlock.games.space.GameEngine;
 import com.github.javlock.games.space.StaticData;
 import com.github.javlock.games.space.client.online.game.engine.input.GameControl;
-import com.github.javlock.games.space.client.online.game.engine.window.GameShaders;
 import com.github.javlock.games.space.client.online.game.header.GameHeader;
 import com.github.javlock.games.space.client.online.game.header.control.MouseHeader;
 import com.github.javlock.games.space.client.online.game.header.window.WindowHeader;
@@ -659,7 +656,6 @@ public class ClientGameEngine extends GameEngine {
 		ProgrammUtils.createAll();
 
 		createCubemapTexture();
-		createCubemapProgram();
 
 		createFullScreenQuad();
 
@@ -693,8 +689,8 @@ public class ClientGameEngine extends GameEngine {
 	private void render() {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		drawShips();
-		drawAsteroids();
-		drawCubemap();
+		DrawEngine.drawAsteroids();
+		DrawEngine.drawCubemap();
 		drawShots();
 		drawParticles();
 
@@ -859,8 +855,8 @@ public class ClientGameEngine extends GameEngine {
 		frustumIntersection.set(viewProjMatrix);
 
 		/* Update the background shader */
-		glUseProgram(GameShaders.getCubemapProgram());
-		glUniformMatrix4fv(GameShaders.getCubemap_invViewProjUniform(), false, invViewProjMatrix.get(matrixBuffer));
+		glUseProgram(Cube.cubemapProgram);
+		glUniformMatrix4fv(Cube.cubemap_invViewProjUniform, false, invViewProjMatrix.get(matrixBuffer));
 
 		/* Update the ship shader */
 		glUseProgram(Ship.shipProgram);
