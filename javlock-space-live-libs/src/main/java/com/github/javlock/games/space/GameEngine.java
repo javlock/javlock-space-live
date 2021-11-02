@@ -16,6 +16,8 @@ import lombok.Setter;
 
 public class GameEngine extends Thread {
 
+	public static final String VERSION = "0.0.0.1";
+
 	public static CopyOnWriteArrayList<Asteroid> localAsteroids = new CopyOnWriteArrayList<>();
 	public static CopyOnWriteArrayList<Ship> localShips = new CopyOnWriteArrayList<>();
 	public static CopyOnWriteArrayList<Shot> directShots = new CopyOnWriteArrayList<>();

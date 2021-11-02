@@ -245,7 +245,9 @@ public class ClientGameEngine extends GameEngine {
 			WindowHeader.setFbWidth(WindowHeader.getWidth());
 			WindowHeader.setFbHeight(WindowHeader.getHeight());
 		}
-		WindowHeader.setWindow(glfwCreateWindow(WindowHeader.getWidth(), WindowHeader.getHeight(), GameHeader.title,
+
+		String title = GameHeader.title + " " + GameEngine.VERSION;
+		WindowHeader.setWindow(glfwCreateWindow(WindowHeader.getWidth(), WindowHeader.getHeight(), title,
 				!windowed ? monitor : 0L, NULL));
 
 		if (WindowHeader.getWindow() == NULL) {
