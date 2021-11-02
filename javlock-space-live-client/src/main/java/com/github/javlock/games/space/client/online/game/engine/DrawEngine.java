@@ -111,7 +111,7 @@ public class DrawEngine {
 		glNormalPointer(GL_FLOAT, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		for (Asteroid asteroid2 : ClientGameEngine.localAsteroids) {
+		for (Asteroid asteroid2 : GameEngine.localAsteroids) {
 			if (asteroid2 == null) {
 				continue;
 			}
