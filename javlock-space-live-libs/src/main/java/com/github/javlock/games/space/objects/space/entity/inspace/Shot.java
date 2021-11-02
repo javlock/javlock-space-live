@@ -14,6 +14,8 @@ public class Shot extends SpaceEntity {
 
 	public static int shotProgram;
 
+	public static float shotVelocity = 50.0F;
+
 	int damage = 1;
 
 	public Shot() throws NoSuchAlgorithmException {
