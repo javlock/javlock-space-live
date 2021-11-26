@@ -4,6 +4,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.joml.Vector3d;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 import com.github.javlock.games.space.objects.space.entity.basic.Particle;
 import com.github.javlock.games.space.objects.space.entity.inspace.Asteroid;
@@ -32,8 +33,10 @@ public class GameEngine extends Thread {
 	public static Vector3f tmp3 = new Vector3f();
 	public static Vector3d tmp = new Vector3d();
 
+	public static GLFWWindowSizeCallback wsCallback;
 	protected float shotSeparation = 0.8f;
 	public int shotMilliseconds = 20;// ПЕРЕЗАРЯДКА своя
+
 	protected float maxShotLifetime = 4.0F;
 
 	private @Getter @Setter boolean active = true;

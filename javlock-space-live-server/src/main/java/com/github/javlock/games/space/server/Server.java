@@ -35,10 +35,10 @@ import lombok.Getter;
 public class Server {
 	static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	private @Getter ServerEngine serverEngine = new ServerEngine(this);
-
 	private static @Getter ServerBootstrap serverBootstrap = new ServerBootstrap();
+
 	private static @Getter EventLoopGroup serverWorkgroup = new NioEventLoopGroup();
+	private @Getter ServerEngine serverEngine = new ServerEngine(this);
 
 	private int port;
 	Server server = this;
@@ -47,7 +47,7 @@ public class Server {
 	// network
 	private @Getter NetworkHandler networkHandler = new NetworkHandler(this);
 
-	private ChannelFuture bindChannelFuture;
+	private @Getter ChannelFuture bindChannelFuture;
 
 	public void initConfig() throws IOException {
 		logger.info("initConfig-start");

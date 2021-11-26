@@ -15,19 +15,18 @@ public class NetworkHandler {
 		this.server = server;
 	}
 
-	public void sendBroadcast(Object message) {
-		for (ChannelHandlerContext channelHandlerContext : connections) {
-			channelHandlerContext.channel().writeAndFlush(message);
-		}
-	}
-
 	public void connected(ChannelHandlerContext ctx) {
 		connections.add(ctx);
-
 	}
 
 	public void disconnected(ChannelHandlerContext ctx) {
 		connections.remove(ctx);
+	}
+
+	public void sendBroadcast(Object message) {
+		for (ChannelHandlerContext channelHandlerContext : connections) {
+			channelHandlerContext.channel().writeAndFlush(message);
+		}
 	}
 
 }

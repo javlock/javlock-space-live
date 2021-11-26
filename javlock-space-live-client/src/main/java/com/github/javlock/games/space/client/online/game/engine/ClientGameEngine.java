@@ -24,7 +24,6 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursor;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -82,7 +81,6 @@ import org.joml.Vector4d;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLUtil;
@@ -99,6 +97,7 @@ import com.github.javlock.games.space.client.online.game.header.control.MouseHea
 import com.github.javlock.games.space.client.online.game.header.window.WindowHeader;
 import com.github.javlock.games.space.client.online.game.network.handler.ObjectHandlerClient;
 import com.github.javlock.games.space.client.online.game.objects.space.entity.SpaceCamera;
+import com.github.javlock.games.space.client.online.game.utils.CallbacksUtils;
 import com.github.javlock.games.space.client.online.game.utils.GameUtils;
 import com.github.javlock.games.space.network.packets.Packet;
 import com.github.javlock.games.space.network.packets.PingPacket;
@@ -142,7 +141,6 @@ public class ClientGameEngine extends GameEngine {
 	private Matrix4f invViewProjMatrix = new Matrix4f();
 
 	private GLCapabilities caps;
-	private GLFWWindowSizeCallback wsCallback;
 	private Callback debugProc;
 
 	boolean firstShot = false;
@@ -219,7 +217,7 @@ public class ClientGameEngine extends GameEngine {
 		}
 	}
 
-	public void exit() throws InterruptedException {
+	public void exit() {
 		setActive(false);
 		future.awaitUninterruptibly().syncUninterruptibly();
 		nioEventLoopGroup.shutdownGracefully();
@@ -256,18 +254,8 @@ public class ClientGameEngine extends GameEngine {
 		glfwSetCursor(WindowHeader.getWindow(), glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR));
 
 		// TODO CREATE CALLBACKS
-		GameControl.createCallbacks(WindowHeader.getWindow());
 
-		glfwSetWindowSizeCallback(WindowHeader.getWindow(), wsCallback = new GLFWWindowSizeCallback() {
-			@Override
-			public void invoke(long window, int width, int height) {
-				if (width > 0 && height > 0
-						&& (WindowHeader.getWidth() != width || WindowHeader.getHeight() != height)) {
-					WindowHeader.setWidth(width);
-					WindowHeader.setHeight(height);
-				}
-			}
-		});
+		CallbacksUtils.ClientCallBacks.createAllForClient();
 
 		glfwMakeContextCurrent(WindowHeader.getWindow());// СОЗДАНИЕ КОНТЕКСТА
 		glfwSwapInterval(0);

@@ -41,8 +41,7 @@ public class ObjectHandlerServer extends ChannelDuplexHandler {
 		if (message instanceof Shot) {
 			Shot shot = (Shot) message;
 			ServerEngine.directShots.add(shot);
-
-			// TODO отсылка всем клиентам
+			server.getNetworkHandler().sendBroadcast(shot);
 			/*
 			 * Map<Long, IoSession> targetSessions =
 			 * session.getService().getManagedSessions(); for (Map.Entry<Long, IoSession>
@@ -67,10 +66,6 @@ public class ObjectHandlerServer extends ChannelDuplexHandler {
 		}
 
 		logger.info("OBJECT:{}, TYPE:{}", message, message.getClass());
-
-	}
-
-	private void sendToAll(ChannelHandlerContext currentContext, Object message) {
 
 	}
 
