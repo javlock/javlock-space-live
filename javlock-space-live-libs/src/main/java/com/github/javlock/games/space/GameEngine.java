@@ -16,28 +16,28 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class GameEngine extends Thread {
-
 	public static final String VERSION = "0.0.0.1";
 
-	public static CopyOnWriteArrayList<Asteroid> localAsteroids = new CopyOnWriteArrayList<>();
-	public static CopyOnWriteArrayList<Ship> localShips = new CopyOnWriteArrayList<>();
-	public static CopyOnWriteArrayList<Shot> directShots = new CopyOnWriteArrayList<>();
-	public static CopyOnWriteArrayList<Turret> turrets = new CopyOnWriteArrayList<>();
-	public static CopyOnWriteArrayList<Particle> particles = new CopyOnWriteArrayList<>();
+	public static final CopyOnWriteArrayList<Asteroid> localAsteroids = new CopyOnWriteArrayList<>();
 
-	public static float maxParticleLifetime = 1.0F;
+	public static final CopyOnWriteArrayList<Ship> localShips = new CopyOnWriteArrayList<>();
+	public static final CopyOnWriteArrayList<Shot> directShots = new CopyOnWriteArrayList<>();
+	public static final CopyOnWriteArrayList<Turret> turrets = new CopyOnWriteArrayList<>();
+	public static final CopyOnWriteArrayList<Particle> particles = new CopyOnWriteArrayList<>();
 
-	protected static final int explosionParticles = 40;
+	public static final float MAXPARTICLELIFETIME = 1.0F;
+	protected static final int EXPLOSIONPARTICLESCOUNT = 40;
 
-	public static int shotOpponentMilliseconds = 20;// ПЕРЕЗАРЯДКА У ДРУГИХ
 	public static Vector3f tmp3 = new Vector3f();
 	public static Vector3d tmp = new Vector3d();
-
 	public static GLFWWindowSizeCallback wsCallback;
-	protected float shotSeparation = 0.8f;
-	public int shotMilliseconds = 20;// ПЕРЕЗАРЯДКА своя
 
-	protected float maxShotLifetime = 4.0F;
+	protected float shotSeparation = 0.8f;
 
 	private @Getter @Setter boolean active = true;
+
+	@Override
+	public void run() {
+		throw new UnsupportedOperationException("impl Engine (run)");
+	}
 }

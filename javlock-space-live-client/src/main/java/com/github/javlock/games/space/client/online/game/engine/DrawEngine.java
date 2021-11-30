@@ -234,10 +234,24 @@ public class DrawEngine {
 					if (enemyShip == null) {
 						return;
 					}
+
+					double enemyShipPosX = enemyShip.getPosition().x;
+					double enemyShipPosY = enemyShip.getPosition().y;
+					double enemyShipPosZ = enemyShip.getPosition().z;
+
+					SpaceCamera camera = GameHeader.camera;
+					Vector3f cameraLinearVel = camera.linearVel;
+					Vector3d cameraPos = camera.position;
+
 					Vector3d targetOrigin = GameEngine.tmp;
-					targetOrigin.set(enemyShip.getPosition().x, enemyShip.getPosition().y, enemyShip.getPosition().z);
-					Vector3f interceptorDir = StaticData.intercept(GameHeader.camera.position, Shot.shotVelocity,
-							targetOrigin, GameEngine.tmp3.set(GameHeader.camera.linearVel).negate(), StaticData.tmp2);
+					Vector3f tmp2 = StaticData.tmp2;
+					Vector3f tmp3 = GameEngine.tmp3;
+					Vector3f tmp3Negated = tmp3.set(cameraLinearVel).negate();
+
+					targetOrigin.set(enemyShipPosX, enemyShipPosY, enemyShipPosZ);
+
+					Vector3f interceptorDir = StaticData.intercept(cameraPos, Shot.SHOTVELOCITY, targetOrigin,
+							tmp3Negated, tmp2);
 
 					if (interceptorDir == null) {
 						// FIXME interceptorDir==null

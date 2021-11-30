@@ -37,8 +37,6 @@ public class ServerEngine extends GameEngine {
 	private static float shipRadius = 4.0F;
 
 	private static float maxShotLifetime = 4.0F;
-	static float minAsteroidRadius = 1F;
-	static float maxAsteroidRadius = 330F;
 
 	Logger logger = LoggerFactory.getLogger("ServerEngine");
 
@@ -63,7 +61,7 @@ public class ServerEngine extends GameEngine {
 			logger.info("Ast:{}", i);
 			try {
 				Asteroid asteroid = new Asteroid();
-				asteroid.setScale(Asteroid.generateSize(minAsteroidRadius, maxAsteroidRadius));
+				asteroid.setScale(Asteroid.generateSize(asteroidConfig.getSizeMin(), asteroidConfig.getSizeMax()));
 
 				double xmin = asteroidConfig.getRespawnRangeXmin();
 				double xmax = asteroidConfig.getRespawnRangeXmax();
@@ -237,7 +235,9 @@ public class ServerEngine extends GameEngine {
 			if (shipWho == null) {
 				return;
 			}
-			if (thisTime - shipWho.lastShotTime < 1E6 * GameEngine.shotOpponentMilliseconds) {
+			if (thisTime - shipWho.lastShotTime < 1E6 * Shot.SHOTMILLISECONDS
+			// GameEngine.shotOpponentMilliseconds
+			) {
 				return;
 			}
 
@@ -264,7 +264,7 @@ public class ServerEngine extends GameEngine {
 
 			Vector3d shotPosVVector3d = tmp.set(shipPosX, shipPosY, shipPosZ).sub(position).negate().normalize()
 					.mul(1.01f * shipRadius).add(shipPosX, shipPosY, shipPosZ);
-			Vector3f icept = StaticData.intercept(shotPosVVector3d, Shot.shotVelocity, position, linearVel,
+			Vector3f icept = StaticData.intercept(shotPosVVector3d, Shot.SHOTVELOCITY, position, linearVel,
 					StaticData.tmp2);
 
 			if (icept == null) {
@@ -281,9 +281,9 @@ public class ServerEngine extends GameEngine {
 			Vector4f projectileVelocity = newShot.getProjectileVelocity();
 			if (projectileVelocity.w <= 0.0F) {
 				projectilePosition.set(shotPosVVector3d);
-				projectileVelocity.x = StaticData.tmp2.x * Shot.shotVelocity;
-				projectileVelocity.y = StaticData.tmp2.y * Shot.shotVelocity;
-				projectileVelocity.z = StaticData.tmp2.z * Shot.shotVelocity;
+				projectileVelocity.x = StaticData.tmp2.x * Shot.SHOTVELOCITY;
+				projectileVelocity.y = StaticData.tmp2.y * Shot.SHOTVELOCITY;
+				projectileVelocity.z = StaticData.tmp2.z * Shot.SHOTVELOCITY;
 				projectileVelocity.w = 0.01f;
 			}
 			directShots.add(newShot);

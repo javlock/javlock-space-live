@@ -10,9 +10,7 @@ public class WindowHeader {
 	@Getter
 	@Setter
 	static boolean leadEnabled = true;
-	@Getter
-	@Setter
-	static boolean hUDnabled = true;
+	private static @Getter @Setter boolean hUDnabled = false;
 
 	@Getter
 	@Setter

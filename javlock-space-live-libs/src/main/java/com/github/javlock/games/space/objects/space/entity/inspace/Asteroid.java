@@ -1,9 +1,6 @@
 package com.github.javlock.games.space.objects.space.entity.inspace;
 
 import java.util.Objects;
-import java.util.Random;
-
-import org.slf4j.LoggerFactory;
 
 import com.github.javlock.games.space.objects.space.entity.basic.SpaceEntity;
 import com.github.javlock.utils.NumberUtils;
@@ -57,32 +54,67 @@ public class Asteroid extends SpaceEntity {
 
 	@Override
 	public void spawnResource() {
-		double vOrig = getV();
-		LoggerFactory.getLogger("TEST").info(":{}", vOrig);
-		double currentV = vOrig;
-		Random r = new Random();
-		int rangeMin = 40;
-		int rangeMax = -60;
-		while (currentV >= 30) {
+		if (getWorldEventBus() != null) {
 
-			double randomValue = NumberUtils.randomDoubleInRange(rangeMin, currentV);
-			currentV = currentV - randomValue;
+			// объем текущего
+			double currentV = getV();
+			// размер текущего
+			float currentScale = getScale();
+			// позиция текущего
+			double currentX = getPosition().x;
+			double currentY = getPosition().y;
+			double currentZ = getPosition().z;
 
-			Asteroid newAsteroid = new Asteroid();
-			newAsteroid.setWorldEventBus(getWorldEventBus());
-			newAsteroid.setHealth(10);
+			// радиус текущего
+			double currentR = Math.cbrt(currentV);
+			// разброс
+			int xrd = (int) (currentR * currentR * 3.05F);
 
-			float newScale = getScaleByV(randomValue);
-			newAsteroid.setScale(newScale);
+			while (currentV >= 4) {
 
-			int base = 600;
-			base = (int) (base + randomValue) + 13;
+				// новый объем (от 1/50 до 1/5 от старого) (потом вычитаем новый из currentV)
+				double newV = NumberUtils.randomDoubleInRange(currentScale / 50, currentV / 5);
+				if (newV > currentV) {
+					continue;
+				}
+				currentV = currentV - newV;// вычитаем
 
-			newAsteroid.getPosition().x = getPosition().x + NumberUtils.randomDoubleInRange(-base, base);
-			newAsteroid.getPosition().y = getPosition().y + NumberUtils.randomDoubleInRange(-base, base);
-			newAsteroid.getPosition().z = getPosition().z + NumberUtils.randomDoubleInRange(-base, base);
+				// новый scale (получаем из "новый объем")
+				float newScale = getScaleByV(newV);
 
-			newAsteroid.spawn();
+				// новая позиция (должен находиться в объеме старого, возможен разброс )
+				// позиция координат исходя из объема (пары)
+				double newRXmin = currentX - currentR - xrd;
+				double newRXmax = currentX + currentR + xrd;
+
+				double newRYmin = currentY - currentR - xrd;
+				double newRYmax = currentY + currentR + xrd;
+
+				double newRZmin = currentZ - currentR - xrd;
+				double newRZmax = currentZ + currentR + xrd;
+
+				// [-x-:]
+
+				// новая позиция
+				double newX = NumberUtils.randomDoubleInRange(newRXmin, newRXmax);
+				double newY = NumberUtils.randomDoubleInRange(newRYmin, newRYmax);
+				double newZ = NumberUtils.randomDoubleInRange(newRZmin, newRZmax);
+
+				//
+
+				Asteroid newAsteroid = new Asteroid();
+				newAsteroid.setWorldEventBus(getWorldEventBus());
+				newAsteroid.setHealth(newScale * 5);
+				newAsteroid.setScale(newScale);
+
+				// позиция нового
+
+				newAsteroid.getPosition().x = newX;
+				newAsteroid.getPosition().y = newY;
+				newAsteroid.getPosition().z = newZ;
+
+				newAsteroid.spawn();
+			}
 		}
 	}
 

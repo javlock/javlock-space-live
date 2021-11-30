@@ -53,11 +53,13 @@ public class SpaceEntity implements Serializable, SpaceEntityInterface {
 		if (health != 0F) {
 			health = 0F;
 		}
+		if (worldEventBus != null) {
 
-		SpaceEntityDestroyEvent destroyEvent = new SpaceEntityDestroyEvent();
-		destroyEvent.setTargetEntity(this);
-		worldEventBus.post(destroyEvent);
-		spawnResource();
+			SpaceEntityDestroyEvent destroyEvent = new SpaceEntityDestroyEvent();
+			destroyEvent.setTargetEntity(this);
+			worldEventBus.post(destroyEvent);
+			spawnResource();
+		}
 	}
 
 	@Override

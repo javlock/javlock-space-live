@@ -22,18 +22,10 @@ public class ObjectHandlerClient extends ChannelDuplexHandler {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
-		if (message instanceof Ship) {
-			ClientGameEngine.localShips.add((Ship) message);
-		} else if (message instanceof Asteroid) {
-			Asteroid asteroid = (Asteroid) message;
-			ClientGameEngine.localAsteroids.add(asteroid);
-			return;
-
-		} else if (message instanceof Shot) {
+		if (message instanceof Shot) {
 			Shot shot = (Shot) message;
 			ClientGameEngine.directShots.add(shot);
 			return;
-
 		} else if (message instanceof EmitExplosionPacket) {
 			EmitExplosionPacket emitExplosionPacket = (EmitExplosionPacket) message;
 			GameHeader.onlinegame.emitExplosion(emitExplosionPacket.getP(), emitExplosionPacket.getNormal());
@@ -52,7 +44,16 @@ public class ObjectHandlerClient extends ChannelDuplexHandler {
 				return;
 			}
 
+		} else if (message instanceof Ship) {
+			ClientGameEngine.localShips.add((Ship) message);
+			return;
+		} else if (message instanceof Asteroid) {
+			Asteroid asteroid = (Asteroid) message;
+			ClientGameEngine.localAsteroids.add(asteroid);
+			return;
+
 		}
+
 		logger.info("OBJECT:{}, TYPE:{}", message, message.getClass());
 
 	}

@@ -6,6 +6,9 @@ import lombok.Setter;
 public class AsteroidConfig {
 	private @Getter @Setter int asteroidCount = 1024;
 
+	private @Getter @Setter float sizeMin = 10;
+	private @Getter @Setter float sizeMax = 1000;
+
 	private @Getter @Setter double respawnRangeXmin = -10000D;
 	private @Getter @Setter double respawnRangeXmax = 10000D;
 	private @Getter @Setter double respawnRangeYmin = -10000D;

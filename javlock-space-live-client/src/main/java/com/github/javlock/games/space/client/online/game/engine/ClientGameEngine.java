@@ -70,6 +70,7 @@ import static org.lwjgl.system.MemoryUtil.memAddress;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.security.NoSuchAlgorithmException;
 
@@ -120,7 +121,6 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class ClientGameEngine extends GameEngine {
-
 	private ChannelFuture future;
 
 	Logger logger = LoggerFactory.getLogger("ClientGameEngine");
@@ -181,14 +181,13 @@ public class ClientGameEngine extends GameEngine {
 	}
 
 	public void emitExplosion(Vector3d p, Vector3f normal) {
-		int c = explosionParticles;
+		int c = EXPLOSIONPARTICLESCOUNT;
 		if (normal != null) {
 			GeometryUtils.perpendicular(normal, tmp4, tmp3);
 		}
-		for (int i = 0; i < explosionParticles; i++) {
+		for (int i = 0; i < EXPLOSIONPARTICLESCOUNT; i++) {
 
 			Particle particleDataObjectPairD = new Particle();
-			Vector3d particlePosition = particleDataObjectPairD.getPosition();
 			Vector4d particleVelocity = particleDataObjectPairD.getParticleVelocity();
 			if (particleVelocity.w <= 0.0F) {
 				if (normal != null) {
@@ -208,7 +207,7 @@ public class ClientGameEngine extends GameEngine {
 				particleVelocity.normalize3();
 				particleVelocity.mul(140);
 				particleVelocity.w = 0.01f;
-				particlePosition.set(p);
+				particleDataObjectPairD.getPosition().set(p);
 				if (c-- == 0) {
 					break;
 				}
@@ -335,9 +334,9 @@ public class ClientGameEngine extends GameEngine {
 			SpaceCamera camera = GameHeader.camera;
 
 			if (shotVel.w <= 0.0F) {
-				shotVel.x = camera.linearVel.x + tmp2.x * Shot.shotVelocity;
-				shotVel.y = camera.linearVel.y + tmp2.y * Shot.shotVelocity;
-				shotVel.z = camera.linearVel.z + tmp2.z * Shot.shotVelocity;
+				shotVel.x = camera.linearVel.x + tmp2.x * Shot.SHOTVELOCITY;
+				shotVel.y = camera.linearVel.y + tmp2.y * Shot.SHOTVELOCITY;
+				shotVel.z = camera.linearVel.z + tmp2.z * Shot.SHOTVELOCITY;
 				shotVel.w = 0.01f;
 				if (!firstShot) {
 					shotPosition.set(camera.right(tmp3)).mul(shotSeparation).add(camera.position);
@@ -347,9 +346,8 @@ public class ClientGameEngine extends GameEngine {
 					firstShot = false;//
 				}
 			}
-			//
-			directShots.add(shot);
 			send(shot);
+			directShots.add(shot);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -481,7 +479,7 @@ public class ClientGameEngine extends GameEngine {
 		GameControl.updateControls();
 
 		/* Выстрелы */
-		if (MouseHeader.isLeftMouseDown() && (thisTime - lastShotTime >= 1E6 * shotMilliseconds)) {
+		if (MouseHeader.isLeftMouseDown() && (thisTime - lastShotTime >= 1E6 * Shot.SHOTMILLISECONDS)) {
 			shoot();
 			lastShotTime = thisTime;
 		}
@@ -496,6 +494,7 @@ public class ClientGameEngine extends GameEngine {
 
 			// TODO ЗАЧЕМ ЭТО
 			if (particleVelocity.w <= 0.0F) {
+				LoggerFactory.getLogger("WTF").info("SIZE {} ID:{}", particles.size(), particle.getId());
 				continue;
 			}
 
@@ -508,7 +507,7 @@ public class ClientGameEngine extends GameEngine {
 			newPosition.set(x, y, z).mul(deltaTime).add(particlePosition);
 
 			// У частицы истекло время жизни
-			if (particleVelocity.w > maxParticleLifetime) {
+			if (particleVelocity.w > MAXPARTICLELIFETIME) {
 				particleVelocity.w = 0.0F;
 				particles.remove(particle);
 				continue;
@@ -526,12 +525,8 @@ public class ClientGameEngine extends GameEngine {
 			Vector3d projectilePosition = shot.getPosition();
 			newPosition.set(projectileVelocity.x, projectileVelocity.y, projectileVelocity.z).mul(deltaTime)
 					.add(projectilePosition);
-			if (projectileVelocity.w > maxShotLifetime) {
+			if (projectileVelocity.w > Shot.MAXSHOTLIFETIME || projectileVelocity.w <= 0.0F) {
 				projectileVelocity.w = 0.0F;
-				directShots.remove(shot);
-				continue;
-			}
-			if (projectileVelocity.w <= 0.0F) {
 				directShots.remove(shot);
 				continue;
 			}
@@ -541,14 +536,16 @@ public class ClientGameEngine extends GameEngine {
 				if (ship == null) {
 					continue;
 				}
-				double x = ship.getPosition().x;
-				double y = ship.getPosition().y;
+				double shipX = ship.getPosition().x;
+				double shipY = ship.getPosition().y;
 				double z = ship.getPosition().z;
+				float shipRadius = Ship.shipMesh.boundingSphereRadius;
+				FloatBuffer shipMeshPositions = Ship.shipMesh.positions;
+				float shipScale = ship.getScale();
 
-				if (broadphase(x, y, z, Ship.shipMesh.boundingSphereRadius, ship.getScale(), projectilePosition,
-						newPosition)
-						&& narrowphase(Ship.shipMesh.positions, x, y, z, ship.getScale(), projectilePosition,
-								newPosition, tmp, StaticData.tmp2)) {
+				if (broadphase(shipX, shipY, z, shipRadius, shipScale, projectilePosition, newPosition)
+						&& narrowphase(shipMeshPositions, shipX, shipY, z, shipScale, projectilePosition, newPosition,
+								tmp, StaticData.tmp2)) {
 					projectileVelocity.w = 0.0F;
 					// continue projectiles;
 				}
